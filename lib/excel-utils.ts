@@ -7,6 +7,8 @@ const EXCEL_FILE_PATH = path.join(process.cwd(), 'data', 'matrix.xlsx');
 export interface Product {
     sku: string;
     name: string;
+    url?: string;
+    referencePrice?: number;
 }
 
 export function getProductsFromExcel(): Product[] {
@@ -30,7 +32,14 @@ export function getProductsFromExcel(): Product[] {
         return data.map(row => {
             const sku = String(row['Код партнера'] || row['Код партнера '] || '').trim();
             const name = String(row['Номенклатура'] || row['Номенклатура '] || '').trim();
-            return { sku, name };
+            const url = String(row['__EMPTY'] || '').trim();
+
+            // Extract Reference Price (RIC)
+            // User screenshot shows "РИЦ ЛЕРУА"
+            const rawPrice = row['РИЦ ЛЕРУА'] || row['РИЦ ЛЕРУА '] || row['РИЦ'] || 0;
+            const referencePrice = typeof rawPrice === 'number' ? rawPrice : parseInt(String(rawPrice).replace(/[^0-9]/g, ''), 10) || 0;
+
+            return { sku, name, url, referencePrice };
         }).filter(p => p.sku && p.sku !== 'undefined');
     } catch (error) {
         console.error('Error reading Excel file:', error);

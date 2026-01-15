@@ -1,0 +1,16 @@
+[Unit]
+Description=Lemana Price Parser Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/data/lemana-parser
+ExecStart=/home/igun/.nvm/versions/node/v22.19.0/bin/npm run start
+Restart=always
+Environment=NODE_ENV=production
+Environment=PORT=3002
+Environment=DISPLAY=:10
+Environment=PATH=/home/igun/.nvm/versions/node/v22.19.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+[Install]
+WantedBy=default.target

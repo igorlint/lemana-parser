@@ -7,13 +7,30 @@ export interface ParseResult {
     price: string;
     status: 'success' | 'error';
     error?: string;
+    screenshot?: string;
 }
 
-export async function fetchPrice(sku: string, subdomain: string): Promise<ParseResult> {
-    const scriptPath = path.join(process.cwd(), 'lib', 'standalone-parser.js');
+export async function fetchPrice(sku: string, subdomain: string, originalUrl?: string, useProxy: boolean = false, referencePrice: number = 0): Promise<ParseResult> {
+    const scriptPath = path.join(process.cwd(), 'lib', 'parser_pyautogui.py');
+    const venvPath = path.join(process.cwd(), 'venv', 'bin', 'python3');
 
     return new Promise((resolve) => {
-        exec(`node "${scriptPath}" ${sku} ${subdomain}`, (error, stdout, stderr) => {
+        const command = `xvfb-run -a -s "-screen 0 1920x1080x24" "${venvPath}" "${scriptPath}" "${sku}" "${subdomain}" "${originalUrl || ''}" "${useProxy}" "60" "${referencePrice}"`;
+        exec(command, (error, stdout, stderr) => {
+            // DEBUG LOGGING
+            const fs = require('fs');
+            const logEntry = `
+[${new Date().toISOString()}] SKU: ${sku}
+Command: ${command}
+Error: ${error ? JSON.stringify(error) : 'None'}
+Length Stdout: ${stdout.length}
+Stderr: ${stderr}
+Stdout Head: ${stdout.substring(0, 1000)}
+Stdout Tail: ${stdout.substring(Math.max(0, stdout.length - 1000))}
+--------------------------------------------------
+`;
+            fs.appendFileSync('debug_parser.log', logEntry);
+
             if (error) {
                 console.error(`Exec error for ${sku}:`, error);
                 resolve({
@@ -46,7 +63,8 @@ export async function fetchPrice(sku: string, subdomain: string): Promise<ParseR
                         sku,
                         region: subdomain || 'moscow',
                         price: String(result.price),
-                        status: 'success'
+                        status: 'success',
+                        screenshot: result.screenshot
                     });
                 } else {
                     resolve({
@@ -54,7 +72,8 @@ export async function fetchPrice(sku: string, subdomain: string): Promise<ParseR
                         region: subdomain || 'moscow',
                         price: '0',
                         status: 'error',
-                        error: result?.error || 'Failed to parse output'
+                        error: result?.error || 'Failed to parse output',
+                        screenshot: result?.screenshot
                     });
                 }
             } catch (e: any) {

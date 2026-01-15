@@ -1,0 +1,71 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  logs      Log[]
+  priceHistory PriceHistory[]
+  parsingJobs ParsingJob[]
+}
+
+model ParsingJob {
+  id        Int      @id @default(autoincrement())
+  status    String   // 'RUNNING', 'COMPLETED', 'FAILED'
+  startTime DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model PriceHistory {
+  id        Int      @id @default(autoincrement())
+  sku       String
+  price     String
+  referencePrice Float?
+  region    String
+  url       String
+  screenshot String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+}
+
+model GlobalSettings {
+  id             Int      @id @default(1)
+  tgBotToken     String?
+  tgChatId       String?
+  scheduleDays   String?  // JSON array: ["Mon", "Wed"]
+  scheduleHours  String?  // JSON array: ["10:00", "18:00"]
+  enabled              Boolean  @default(false)
+  historyRetentionDays Int      @default(3)
+  updatedAt            DateTime @updatedAt
+}
+
+model ParsingSchedule {
+  id        Int      @id @default(autoincrement())
+  time      String   // "HH:mm"
+  days      String   // JSON: ["Mon", "Wed"]
+  regions   String   // JSON: ["moscow", "spb"]
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

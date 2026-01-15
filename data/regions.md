@@ -2,7 +2,7 @@
 
 | Город | Ссылка |
 | :--- | :--- |
-| Москва, Московская область | [https://lemanapro.ru/?fromRegion=34](https://lemanapro.ru/?fromRegion=34) |
+| Москва, Московская область | [https://lemanapro.ru/?fromRegion=7138](https://lemanapro.ru/?fromRegion=7138) |
 | Клин | [https://klin.lemanapro.ru/?fromRegion=34](https://klin.lemanapro.ru/?fromRegion=34) |
 | Наро-Фоминск | [https://naro-fominsk.lemanapro.ru/?fromRegion=34](https://naro-fominsk.lemanapro.ru/?fromRegion=34) |
 | Санкт-Петербург | [https://spb.lemanapro.ru/?fromRegion=34](https://spb.lemanapro.ru/?fromRegion=34) |

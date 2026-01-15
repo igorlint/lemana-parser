@@ -44,3 +44,14 @@ next-env.d.ts
 output*.json
 *.png
 chrome_data/
+*.log
+*.html
+*.txt
+*.zip
+debug_chrome_profile/
+lemana_chrome_profile/
+venv/
+dev.db
+dev.db-journal
+
+/lib/generated/prisma
